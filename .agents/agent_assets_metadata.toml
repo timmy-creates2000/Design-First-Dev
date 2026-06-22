@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "0rk3Dn0V2-8fJ8QYRjye-"
+uri = "file://artifacts/career-path-ai/src/assets/images/hero.png"
+type = "image"
+title = "Nigerian students tech hero"

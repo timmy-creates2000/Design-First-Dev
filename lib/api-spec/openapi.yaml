@@ -1,22 +1,34 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Career Path AI API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: profile
+    description: User profile and onboarding
+  - name: careers
+    description: Career path operations
+  - name: roadmap
+    description: Roadmap operations
+  - name: chat
+    description: AI career coach chat
+  - name: progress
+    description: Progress tracking
+  - name: resources
+    description: Learning resources
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +36,675 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/signup:
+    post:
+      operationId: signup
+      tags: [auth]
+      summary: Create a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Log in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Log out
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get user profile
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "404":
+          description: Not found
+    post:
+      operationId: saveProfile
+      tags: [profile]
+      summary: Save or update user profile (onboarding)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /careers:
+    get:
+      operationId: listCareers
+      tags: [careers]
+      summary: List all available career paths
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CareerPath"
+
+  /careers/{id}:
+    get:
+      operationId: getCareer
+      tags: [careers]
+      summary: Get career path detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CareerPathDetail"
+        "404":
+          description: Not found
+
+  /careers/recommendations:
+    get:
+      operationId: getRecommendations
+      tags: [careers]
+      summary: Get personalized career recommendations for the current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CareerRecommendation"
+
+  /careers/{careerId}/skill-gap:
+    get:
+      operationId: getSkillGap
+      tags: [careers]
+      summary: Get skill-gap analysis for a career path
+      parameters:
+        - name: careerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillGapAnalysis"
+
+  /roadmap:
+    get:
+      operationId: getRoadmap
+      tags: [roadmap]
+      summary: Get current user roadmap
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roadmap"
+        "404":
+          description: Not found
+    post:
+      operationId: generateRoadmap
+      tags: [roadmap]
+      summary: Generate a new roadmap for a selected career path
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoadmapInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roadmap"
+
+  /roadmap/tasks/{taskId}/complete:
+    patch:
+      operationId: completeTask
+      tags: [roadmap]
+      summary: Mark a roadmap task as complete or incomplete
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCompletionInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoadmapTask"
+
+  /chat/messages:
+    get:
+      operationId: getChatHistory
+      tags: [chat]
+      summary: Get chat message history
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a message to the AI career coach
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessage"
+
+  /progress:
+    get:
+      operationId: getProgress
+      tags: [progress]
+      summary: Get user progress summary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProgressSummary"
+
+  /resources:
+    get:
+      operationId: listResources
+      tags: [resources]
+      summary: List learning resources, optionally filtered by skill
+      parameters:
+        - name: skill
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Resource"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    SignupInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    User:
+      type: object
+      required: [id, name, email, createdAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        onboardingComplete:
+          type: boolean
+        createdAt:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [user, token]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+
+    UserProfileInput:
+      type: object
+      required: [educationLevel, course, state, interests, monthlyBudget, learningPace, timeline]
+      properties:
+        educationLevel:
+          type: string
+        course:
+          type: string
+        school:
+          type: string
+        state:
+          type: string
+        academicLevel:
+          type: string
+        interests:
+          type: array
+          items:
+            type: string
+        existingSkills:
+          type: array
+          items:
+            type: string
+        monthlyBudget:
+          type: string
+        deviceAccess:
+          type: string
+        internetQuality:
+          type: string
+        careerGoals:
+          type: string
+        learningPace:
+          type: string
+        workStyle:
+          type: string
+        timeline:
+          type: string
+
+    UserProfile:
+      type: object
+      required: [id, userId, educationLevel, course, state, interests, monthlyBudget, learningPace, timeline]
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        educationLevel:
+          type: string
+        course:
+          type: string
+        school:
+          type: ["string", "null"]
+        state:
+          type: string
+        academicLevel:
+          type: ["string", "null"]
+        interests:
+          type: array
+          items:
+            type: string
+        existingSkills:
+          type: array
+          items:
+            type: string
+        monthlyBudget:
+          type: string
+        deviceAccess:
+          type: ["string", "null"]
+        internetQuality:
+          type: ["string", "null"]
+        careerGoals:
+          type: ["string", "null"]
+        learningPace:
+          type: string
+        workStyle:
+          type: ["string", "null"]
+        timeline:
+          type: string
+
+    CareerPath:
+      type: object
+      required: [id, title, description, salaryMin, salaryMax, demandLevel, remotePotential, difficultyLevel, timeToJobReady, requiredSkills]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        salaryMin:
+          type: integer
+        salaryMax:
+          type: integer
+        demandLevel:
+          type: string
+        remotePotential:
+          type: string
+        difficultyLevel:
+          type: string
+        timeToJobReady:
+          type: string
+        requiredSkills:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+
+    CareerPathDetail:
+      type: object
+      required: [id, title, description, salaryMin, salaryMax, demandLevel, remotePotential, difficultyLevel, timeToJobReady, requiredSkills, tools, responsibilities, entryStrategy]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        salaryMin:
+          type: integer
+        salaryMax:
+          type: integer
+        demandLevel:
+          type: string
+        remotePotential:
+          type: string
+        difficultyLevel:
+          type: string
+        timeToJobReady:
+          type: string
+        requiredSkills:
+          type: array
+          items:
+            type: string
+        tools:
+          type: array
+          items:
+            type: string
+        responsibilities:
+          type: array
+          items:
+            type: string
+        entryStrategy:
+          type: string
+        category:
+          type: string
+
+    CareerRecommendation:
+      type: object
+      required: [career, fitScore, whyItFits, recommendedNextAction]
+      properties:
+        career:
+          $ref: "#/components/schemas/CareerPath"
+        fitScore:
+          type: integer
+        whyItFits:
+          type: string
+        recommendedNextAction:
+          type: string
+
+    SkillGapAnalysis:
+      type: object
+      required: [careerId, careerTitle, readinessScore, skillsHave, skillsMissing, priorityOrder, estimatedTimeToClose]
+      properties:
+        careerId:
+          type: string
+        careerTitle:
+          type: string
+        readinessScore:
+          type: integer
+        skillsHave:
+          type: array
+          items:
+            type: string
+        skillsMissing:
+          type: array
+          items:
+            type: string
+        priorityOrder:
+          type: array
+          items:
+            type: string
+        estimatedTimeToClose:
+          type: string
+
+    RoadmapInput:
+      type: object
+      required: [careerId]
+      properties:
+        careerId:
+          type: string
+
+    RoadmapTask:
+      type: object
+      required: [id, roadmapId, title, description, stage, estimatedDuration, difficulty, status]
+      properties:
+        id:
+          type: string
+        roadmapId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        stage:
+          type: string
+        monthNumber:
+          type: ["integer", "null"]
+        resourceLink:
+          type: ["string", "null"]
+        estimatedDuration:
+          type: string
+        difficulty:
+          type: string
+        status:
+          type: string
+        completedAt:
+          type: ["string", "null"]
+
+    Roadmap:
+      type: object
+      required: [id, userId, careerId, careerTitle, generatedAt, tasks]
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        careerId:
+          type: string
+        careerTitle:
+          type: string
+        generatedAt:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoadmapTask"
+
+    TaskCompletionInput:
+      type: object
+      required: [completed]
+      properties:
+        completed:
+          type: boolean
+
+    ChatMessage:
+      type: object
+      required: [id, role, content, createdAt]
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+
+    ChatMessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    ProgressSummary:
+      type: object
+      required: [totalTasks, completedTasks, completionPercentage, currentStage, currentCareerPath, tasksCompletedThisWeek, streakDays]
+      properties:
+        totalTasks:
+          type: integer
+        completedTasks:
+          type: integer
+        completionPercentage:
+          type: integer
+        currentStage:
+          type: string
+        currentCareerPath:
+          type: ["string", "null"]
+        tasksCompletedThisWeek:
+          type: integer
+        streakDays:
+          type: integer
+        upcomingMilestones:
+          type: array
+          items:
+            type: string
+
+    Resource:
+      type: object
+      required: [id, title, type, url, isFree, provider, estimatedDuration, relatedSkill, category]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        url:
+          type: string
+        isFree:
+          type: boolean
+        provider:
+          type: string
+        estimatedDuration:
+          type: string
+        relatedSkill:
+          type: string
+        category:
+          type: string
+        difficulty:
+          type: string

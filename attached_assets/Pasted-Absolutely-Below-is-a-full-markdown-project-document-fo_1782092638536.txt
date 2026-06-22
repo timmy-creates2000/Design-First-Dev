@@ -1,0 +1,1101 @@
+Absolutely. Below is a **full markdown project document** for **Career Path AI** that covers:
+
+* **Project overview**
+* **Core problem**
+* **Target users**
+* **Full app features**
+* **How the app works step by step**
+* **Technical architecture / stack**
+* **Data flow**
+* **AI logic**
+* **MVP scope**
+* **Admin / backend needs**
+* **Future features**
+* **Pitch/positioning notes**
+
+You can **copy this directly into a `.md` file** for your team, slides, GitHub README, or hackathon documentation.
+
+---
+
+# Career Path AI
+
+## AI-Powered Nigerian Career Guidance and Skill Roadmap Platform
+
+## 1. Project Overview
+
+**Career Path AI** is an AI-powered career planning and employability platform built for **Nigerian students, undergraduates, fresh graduates, NYSC members, and career switchers**. Its goal is to help users discover **realistic career paths**, understand the **skills they need**, and follow a **personalized roadmap** that fits the **Nigerian job market**, their **budget**, and their **learning timeline**.
+
+Unlike generic career platforms that provide broad global advice, Career Path AI focuses on the **Nigerian context**. It combines **AI-powered career guidance**, **market-aware recommendations**, **skill-gap analysis**, **roadmap generation**, and **progress tracking** into one system that helps users move from **confusion to clarity** and from **interest to employability**.
+
+---
+
+# 2. Problem Statement
+
+A large number of young Nigerians make important career decisions with little practical guidance. Many choose university courses because of family pressure, assumptions, or lack of information. Some spend years in school only to discover that the job opportunities in their field are limited or that they lack the digital skills employers actually demand. Fresh graduates often leave school without a clear career path, no portfolio, and no roadmap for becoming employable.
+
+The major issues include:
+
+* Students choosing the wrong course or career path without enough guidance
+* Undergraduates not knowing how to make themselves job-ready before graduation
+* Graduates lacking digital skills and practical direction
+* Career guidance platforms being too generic and not tailored to Nigeria
+* Lack of affordable, localized learning paths based on a user’s budget and situation
+* No clear bridge between **career advice** and **actual execution**
+
+Career Path AI is designed to solve this by giving users **Nigeria-specific career direction** and a **step-by-step plan** to move toward employability.
+
+---
+
+# 3. Vision
+
+To become the go-to **AI career navigation platform for Nigerians**, helping students and young professionals make informed career decisions, build relevant skills, and become job-ready through practical, affordable, and localized roadmaps.
+
+---
+
+# 4. Core Value Proposition
+
+Career Path AI helps users answer three important questions:
+
+1. **What career path realistically fits me in Nigeria?**
+2. **What skills am I missing to become employable in that path?**
+3. **What exact step-by-step roadmap should I follow to get there?**
+
+---
+
+# 5. Primary Target Users
+
+## Main Users for MVP
+
+The MVP should focus on **Nigerian undergraduates and fresh graduates** because they are the easiest and strongest user segment to solve for first.
+
+### Primary target groups:
+
+* **Undergraduates** who want to become employable before graduation
+* **Fresh graduates / NYSC members** trying to enter a career path
+* **Students interested in tech or digital careers** but unsure where to start
+
+## Secondary Users (future expansion)
+
+* Secondary school students choosing university courses
+* Career switchers moving from one field to another
+* Early professionals trying to move into higher-paying digital roles
+
+---
+
+# 6. Core Product Concept
+
+Career Path AI is not just a chatbot. It is a **career planning engine** made up of several connected systems:
+
+1. **User profile and assessment system**
+2. **Career recommendation engine**
+3. **AI career coach / chatbot**
+4. **Skill-gap analysis system**
+5. **Visual roadmap generator**
+6. **Progress tracking and milestone system**
+7. **Learning resource recommendation engine**
+8. **Nigerian market data layer**
+
+Together, these systems help a user move from **profile → career recommendation → roadmap → progress tracking → job readiness**.
+
+---
+
+# 7. Full App Features
+
+# 7.1 User Authentication & Account System
+
+## Features
+
+* User sign up
+* User login
+* Password reset / forgot password
+* Google sign-in (optional)
+* User onboarding after first login
+* Session management
+* Secure account storage
+
+## User data stored
+
+* Full name
+* Email
+* Phone number (optional)
+* User role / level (student, graduate, NYSC, switcher)
+* Account creation date
+* Profile completion status
+
+---
+
+# 7.2 User Profile & Onboarding System
+
+This is one of the most important parts of the app. The onboarding should feel conversational and not like a boring form.
+
+## Information collected during onboarding
+
+* Full name / preferred name
+* Age range (optional)
+* State / location in Nigeria
+* Education level
+* Current school / institution (optional)
+* Course / department / discipline
+* Current academic level (100L, 200L, graduate, NYSC, etc.)
+* Career interests
+* Skills already known
+* Areas of curiosity (e.g. tech, business, design, data, marketing)
+* Monthly learning budget
+* Device access (phone only, laptop, both)
+* Internet access quality
+* Career goals
+* Preferred learning pace
+* Preferred work style (remote, hybrid, onsite)
+* Whether they want a quick-entry role or long-term professional path
+
+## Purpose of onboarding
+
+The onboarding data becomes the foundation for:
+
+* personalized career recommendations
+* realistic learning paths
+* affordable resource suggestions
+* AI career coaching context
+* roadmap generation
+
+---
+
+# 7.3 Career Recommendation Engine
+
+This is the engine that decides which career paths are most suitable for the user.
+
+## What it should do
+
+After onboarding, the system should recommend **3–5 realistic career paths** for the user based on their background and goals.
+
+## Example career paths
+
+* Data Analyst
+* Product Designer
+* Frontend Developer
+* Backend Developer
+* UI/UX Designer
+* Digital Marketer
+* Product Manager
+* Cybersecurity Analyst
+* Customer Success Specialist
+* Technical Writer
+* Social Media Manager
+* Virtual Assistant
+* DevOps Engineer
+* Business Analyst
+
+## Factors used to rank career paths
+
+* User’s education background
+* Current course / discipline
+* Interest areas
+* Existing skills
+* Budget
+* timeline / urgency
+* Nigeria job market demand
+* entry barrier of the role
+* remote work potential
+* affordability of learning resources
+* skill overlap with what the user already knows
+
+## What the recommendation output should show
+
+For each recommended career path, show:
+
+* Career title
+* Match score / fit score
+* Why it fits the user
+* Average salary range in Nigeria
+* Demand level in Nigeria
+* Remote work potential
+* Estimated learning difficulty
+* Estimated time to become job-ready
+* Key required skills
+* Recommended next action
+
+---
+
+# 7.4 AI Career Coach / Chatbot
+
+This is the interactive assistant that allows users to ask career questions in natural language.
+
+## What the chatbot should do
+
+The AI coach should behave like a knowledgeable Nigerian career mentor. It should use the user’s profile data and app context to answer personalized questions.
+
+## Example user questions
+
+* “Is my course still useful in Nigeria?”
+* “Can I move from microbiology to data analysis?”
+* “What tech skill can I learn with ₦10,000 monthly budget?”
+* “What job can I get in 4 months?”
+* “What is the easiest tech role to start from my background?”
+* “What should I learn first if I want to become a product designer?”
+* “Can I work remotely from Ilorin or Ibadan in this role?”
+
+## Chatbot responsibilities
+
+* Answer Nigeria-specific career questions
+* Explain career options in simple language
+* Suggest next steps based on user profile
+* Explain trade-offs between career paths
+* Recommend learning strategies
+* Motivate the user and keep them progressing
+* Clarify roadmap steps
+* Answer “why was this role recommended to me?”
+
+## Important chatbot behavior
+
+The chatbot should not just be a general-purpose AI assistant. It should have access to:
+
+* user profile
+* recommended career paths
+* roadmap data
+* progress data
+* curated Nigerian job market context
+* resource library
+
+That makes its answers personalized and product-aware.
+
+---
+
+# 7.5 Skill-Gap Analysis Engine
+
+This feature compares the user’s current skill level with the skill requirements of a selected career path.
+
+## What it should do
+
+If a user selects a career path like **Data Analyst**, the app should show:
+
+### What the role requires
+
+* Excel
+* SQL
+* Power BI
+* Data cleaning
+* Data storytelling
+* Portfolio projects
+
+### What the user already has
+
+* Basic Excel
+* Good communication
+* Strong math background
+
+### What the user is missing
+
+* SQL
+* Power BI
+* portfolio project
+* dashboard building
+* interview preparation
+
+## Skill-gap output should include
+
+* Current readiness score
+* Skills already covered
+* Skills missing
+* Priority order of missing skills
+* Estimated time to close the gap
+* Suggested roadmap generated from the missing skills
+
+---
+
+# 7.6 Personalized Roadmap Generator
+
+This is one of the biggest features in the product.
+
+The roadmap generator creates a **step-by-step learning plan** for the user based on:
+
+* selected career path
+* skill gap
+* budget
+* available time
+* learning pace
+* academic level / NYSC stage
+* device and internet constraints
+
+## Roadmap output structure
+
+The roadmap can be divided into:
+
+* Month 1
+* Month 2
+* Month 3
+* Month 4
+* etc.
+
+or into stages like:
+
+* Foundation
+* Core skills
+* Portfolio / projects
+* Job readiness
+
+## Example roadmap for a Data Analyst user
+
+### Month 1
+
+* Learn Excel basics
+* Learn data concepts
+* Complete beginner spreadsheet exercises
+
+### Month 2
+
+* Learn SQL basics
+* Practice SELECT, WHERE, GROUP BY
+* Complete mini data-cleaning tasks
+
+### Month 3
+
+* Learn Power BI or Tableau
+* Build first dashboard project
+* Write project summary
+
+### Month 4
+
+* Build portfolio project
+* Optimize LinkedIn / CV
+* Prepare for entry-level data analyst applications
+
+## Each roadmap step can contain:
+
+* task title
+* description
+* estimated time
+* difficulty level
+* recommended learning resources
+* deadline / milestone
+* completion status
+
+---
+
+# 7.7 Visual Roadmap Interface
+
+The roadmap should not just be plain text. It should be visually represented like a connected learning path.
+
+## Suggested UI style
+
+Use **React Flow** or a similar node-based visual system to show:
+
+* learning stages as connected nodes
+* completed tasks marked clearly
+* upcoming milestones
+* dependencies between tasks
+* optional branches for different subpaths
+
+## Visual node examples
+
+* “Learn Excel Basics”
+* “Learn SQL Fundamentals”
+* “Build Project 1”
+* “Create Portfolio”
+* “Mock Interview Preparation”
+
+This makes the roadmap interactive and easier to understand.
+
+---
+
+# 7.8 Progress Tracking System
+
+This feature allows the user to track how far they have gone in their roadmap.
+
+## What users should be able to do
+
+* Mark tasks as complete
+* update task progress
+* view completion percentage
+* track milestones reached
+* see streaks or consistency indicators
+* see current stage in roadmap
+* receive reminders for incomplete milestones
+
+## Progress dashboard can show
+
+* current career goal
+* roadmap completion percentage
+* current learning phase
+* tasks completed this week
+* upcoming milestones
+* AI recommendations for next steps
+
+---
+
+# 7.9 Learning Resource Recommendation Engine
+
+The app should recommend learning materials for each roadmap step.
+
+## Resource types
+
+* YouTube videos
+* free online courses
+* Google certificates
+* Coursera / edX / Udemy links (if affordable)
+* 3MTT resources
+* documentation
+* blogs / articles
+* project ideas
+* Nigerian communities / learning communities
+
+## Resource recommendation factors
+
+* affordability
+* accessibility in Nigeria
+* beginner-friendliness
+* data usage / internet friendliness
+* relevance to selected roadmap step
+
+## Each resource card can show
+
+* title
+* provider
+* type (video/course/article)
+* free or paid
+* estimated duration
+* beginner/intermediate level
+* link
+
+---
+
+# 7.10 Nigerian Career & Job Market Insights Layer
+
+This is the local intelligence layer that differentiates the product.
+
+## Data points that may be stored
+
+* career demand level in Nigeria
+* entry-level salary ranges in naira
+* remote work potential
+* common skill requirements for roles
+* job listing frequency signals
+* availability of local opportunities
+* affordability of upskilling
+
+## Purpose
+
+This data is used to make recommendations more realistic for Nigerian users.
+
+## Example output
+
+For **Product Designer**, show:
+
+* demand: medium-high
+* average junior salary range in Nigeria
+* common tools required
+* remote opportunities
+* portfolio importance
+* expected time to become job-ready
+
+---
+
+# 7.11 Dashboard / Home Screen
+
+The dashboard is the central place the user sees after logging in.
+
+## Dashboard should show
+
+* welcome message
+* current selected career path
+* quick career summary
+* roadmap completion progress
+* pending tasks
+* AI recommendations
+* quick access to chat
+* quick access to roadmap
+* recently completed milestones
+* suggested next action
+
+---
+
+# 7.12 Career Path Detail Page
+
+Each career recommendation should have a dedicated detail page.
+
+## Career path page should contain
+
+* career overview
+* why it was recommended
+* salary range
+* demand level
+* skills required
+* tools/platforms commonly used
+* typical responsibilities
+* beginner entry strategy
+* time-to-entry estimate
+* roadmap preview
+* “choose this path” button
+
+---
+
+# 7.13 Notifications / Reminder System
+
+To keep users active, the app should support reminders.
+
+## Reminder examples
+
+* “You have not completed your roadmap tasks this week”
+* “Your next milestone is due tomorrow”
+* “New learning resources have been added for your selected career path”
+* “Your roadmap has been updated based on your progress”
+
+## Delivery channels
+
+* in-app notifications
+* email notifications
+* push notifications (future)
+
+---
+
+# 7.14 Admin Panel / Management Dashboard
+
+An admin dashboard is useful for managing the app content and system behavior.
+
+## Admin should be able to manage:
+
+* users
+* career paths
+* skill maps
+* roadmap templates
+* learning resources
+* salary / market data
+* flagged AI outputs (future)
+* analytics
+
+## Admin features
+
+* add new career path
+* edit skill requirements for a role
+* upload curated learning resources
+* update salary estimates
+* update job market insights
+* view user growth and activity metrics
+
+---
+
+# 7.15 Analytics & User Insight System
+
+This helps the team understand how users interact with the app.
+
+## Useful analytics
+
+* number of signups
+* onboarding completion rate
+* most selected career paths
+* average roadmap completion rate
+* most asked AI questions
+* resource click-through rate
+* user retention rate
+* common dropout points
+
+---
+
+# 8. App Flow: How the App Functions
+
+This section explains the full user journey from first login to roadmap usage.
+
+---
+
+# 8.1 Step-by-Step User Flow
+
+## Step 1: User creates account
+
+The user signs up using email/password or Google login.
+
+## Step 2: User completes onboarding
+
+The app asks the user questions about:
+
+* education level
+* current course
+* interests
+* budget
+* career goals
+* device access
+* timeline
+
+## Step 3: Profile data is analyzed
+
+The app sends the user profile to the **career recommendation engine**.
+
+## Step 4: Career recommendations are generated
+
+The system ranks several possible career paths and shows the top options.
+
+## Step 5: User views recommended paths
+
+The user sees details such as:
+
+* why each path fits
+* salary range
+* skills needed
+* estimated learning timeline
+
+## Step 6: User selects one preferred career path
+
+The user clicks a recommended path they want to pursue.
+
+## Step 7: Skill-gap analysis is generated
+
+The app compares:
+
+* user’s current skills
+* selected career path requirements
+
+Then it shows:
+
+* what the user has
+* what the user lacks
+* what to learn first
+
+## Step 8: Roadmap is generated
+
+A personalized roadmap is created with:
+
+* stages
+* monthly goals
+* tasks
+* resources
+* milestones
+
+## Step 9: User begins learning journey
+
+The user starts completing tasks from the roadmap.
+
+## Step 10: User interacts with AI career coach
+
+The user can ask questions at any point:
+
+* about the roadmap
+* about career choices
+* about learning strategies
+* about role comparisons
+
+## Step 11: User tracks progress
+
+As tasks are completed, the dashboard updates:
+
+* progress %
+* completed milestones
+* remaining steps
+
+## Step 12: Roadmap adapts over time
+
+If the user changes goals, pace, or circumstances, the app can regenerate or adjust the roadmap.
+
+---
+
+# 9. Functional Modules of the App
+
+The app can be split into the following modules:
+
+1. **Auth Module**
+2. **Onboarding/Profile Module**
+3. **Career Recommendation Module**
+4. **Career Chat Module**
+5. **Skill Gap Analysis Module**
+6. **Roadmap Generator Module**
+7. **Roadmap Visualizer Module**
+8. **Progress Tracking Module**
+9. **Resource Recommendation Module**
+10. **Notification Module**
+11. **Admin Management Module**
+12. **Analytics Module**
+
+---
+
+# 10. Suggested Screens / Pages
+
+## Public Pages
+
+* Landing page
+* About page
+* Login page
+* Sign up page
+
+## User Pages
+
+* Dashboard
+* Onboarding page
+* Profile page
+* Career recommendations page
+* Career path detail page
+* Roadmap page
+* Chat page
+* Progress page
+* Resource library page
+* Settings page
+
+## Admin Pages
+
+* Admin login
+* User management
+* Career path management
+* Resource management
+* Analytics dashboard
+* Roadmap template management
+
+---
+
+# 11. Recommended MVP Scope
+
+For the hackathon, do **not** try to build every feature at full scale. Build the **core value loop** only.
+
+## Best MVP Features
+
+1. User onboarding form
+2. Career recommendation output
+3. One or two career path detail pages
+4. AI career chat
+5. Skill-gap breakdown
+6. Personalized roadmap generator
+7. Visual roadmap page
+8. Progress tracking for roadmap tasks
+
+## Optional MVP extras if time allows
+
+* email login
+* resource cards
+* admin panel mock
+* saved chat history
+* reminders
+
+---
+
+# 12. Suggested MVP Demo Flow
+
+## Demo Scenario
+
+A user is a **300-level microbiology student** with **₦15,000 monthly learning budget** who wants to enter tech but does not know where to start.
+
+### Demo steps
+
+1. User signs up
+2. User fills profile
+3. App recommends:
+
+   * Data Analyst
+   * Product Designer
+   * Customer Success
+4. User clicks **Data Analyst**
+5. App shows:
+
+   * why it fits
+   * salary range
+   * required skills
+   * skill gap
+6. App generates a 4-month roadmap
+7. User opens roadmap visualizer
+8. User asks AI:
+
+   * “Can I finish this roadmap while in school?”
+9. AI answers using the user’s profile
+10. User marks first task as completed
+
+That is a strong hackathon demo.
+
+---
+
+# 13. Technical Architecture
+
+## Suggested Frontend
+
+* **Next.js** for the web app
+* **React** for UI components
+* **Tailwind CSS** for styling
+* **React Flow** for roadmap visualization
+
+## Suggested Backend
+
+You can choose either:
+
+* **Next.js API routes** for simpler MVP backend
+* or **Node/Express** if you want a separate backend service
+
+## Database
+
+* **PostgreSQL** or **Supabase**
+* or **Firebase** if you want faster setup
+* store users, career paths, skills, resources, roadmaps, progress data
+
+## AI Layer
+
+* **Gemini API** for:
+
+  * AI chat
+  * roadmap generation
+  * recommendation explanation
+  * skill-gap summary
+  * adaptive roadmap adjustments
+
+## Authentication
+
+* **NextAuth** or Supabase Auth / Firebase Auth
+
+## Hosting
+
+* **Vercel** for frontend
+* **Supabase / Railway / Render** for backend or DB if needed
+
+---
+
+# 14. Possible Database Structure
+
+## Tables / Collections
+
+### Users
+
+* id
+* name
+* email
+* password_hash
+* role
+* created_at
+
+### UserProfiles
+
+* user_id
+* education_level
+* course
+* school
+* state
+* budget
+* interests
+* goals
+* device_access
+* timeline
+
+### CareerPaths
+
+* id
+* title
+* description
+* salary_min
+* salary_max
+* demand_level
+* remote_potential
+* difficulty_level
+
+### CareerSkills
+
+* id
+* career_path_id
+* skill_name
+* priority_order
+* skill_level_required
+
+### UserCareerRecommendations
+
+* id
+* user_id
+* career_path_id
+* fit_score
+* explanation
+
+### Roadmaps
+
+* id
+* user_id
+* selected_career_path_id
+* generated_at
+
+### RoadmapTasks
+
+* id
+* roadmap_id
+* title
+* description
+* month_or_stage
+* resource_link
+* status
+* estimated_duration
+
+### ProgressLogs
+
+* id
+* user_id
+* roadmap_task_id
+* completed
+* completed_at
+
+### Resources
+
+* id
+* title
+* type
+* url
+* free_or_paid
+* category
+* related_skill
+
+---
+
+# 15. Recommendation Logic (High-Level)
+
+The recommendation engine can score career paths using weighted criteria.
+
+## Example factors
+
+* Interest match → 25%
+* Background / course relevance → 20%
+* skill overlap → 15%
+* budget compatibility → 10%
+* timeline fit → 10%
+* Nigeria demand → 10%
+* remote work potential → 5%
+* affordability of learning path → 5%
+
+The system can assign a total score and rank the top career paths.
+
+---
+
+# 16. AI Responsibilities in the App
+
+The AI is responsible for multiple tasks, not just chat.
+
+## AI can be used for:
+
+* explaining why a career path fits a user
+* answering career questions
+* generating roadmap summaries
+* rewriting roadmap steps into simple language
+* suggesting next learning actions
+* adapting roadmap based on user progress
+* comparing two career paths
+* motivating the user with contextual guidance
+
+---
+
+# 17. What Makes the Product Different
+
+## 1. Nigeria-first focus
+
+The product is designed for the Nigerian education and job environment.
+
+## 2. It goes beyond advice
+
+It does not stop at “you should become X.” It shows the user **how** to actually get there.
+
+## 3. It includes budget-aware planning
+
+The roadmap is adjusted based on what the user can realistically afford.
+
+## 4. It is execution-oriented
+
+The user gets:
+
+* recommendations
+* skill-gap analysis
+* roadmap
+* tasks
+* progress tracking
+
+## 5. It can become a long-term career companion
+
+As the user grows, the roadmap can evolve.
+
+---
+
+# 18. Risks / Challenges
+
+## Product challenges
+
+* getting reliable Nigerian salary / demand data
+* preventing generic AI outputs
+* making recommendations feel credible
+* keeping roadmap quality high
+* keeping the MVP focused and not too broad
+
+## Technical challenges
+
+* integrating structured recommendation logic with AI outputs
+* roadmap generation consistency
+* storing user context for personalized chat
+* designing a good visual roadmap interface
+
+---
+
+# 19. Future Features
+
+## Future improvements
+
+* CV / resume review
+* portfolio builder
+* job/internship matching
+* scholarship / certification recommendation
+* peer communities
+* mentorship matching
+* WhatsApp chatbot version
+* mobile app version
+* voice career assistant
+* aptitude / personality assessments
+* AI interview preparation
+* LinkedIn optimization assistant
+
+---
+
+# 20. Recommended Hackathon Pitch Positioning
+
+For the competition, present it like this:
+
+## One-line pitch
+
+**Career Path AI helps Nigerian undergraduates and fresh graduates discover realistic career paths, identify their skill gaps, and follow personalized low-cost roadmaps to become job-ready.**
+
+## 3 main product jobs
+
+1. **Career clarity** — shows realistic career paths
+2. **Skill-gap diagnosis** — shows what the user is missing
+3. **Execution roadmap** — gives a practical path to employability
+
+---
+
+# 21. Summary
+
+Career Path AI is an AI-powered Nigerian career guidance and employability platform that combines:
+
+* personalized onboarding
+* career recommendation
+* AI coaching
+* skill-gap analysis
+* roadmap generation
+* resource recommendation
+* progress tracking
+
+Its core purpose is to help users move from **uncertainty** to **career clarity** and from **career interest** to **job readiness**.
+
+The strongest version of the MVP should focus on **undergraduates and fresh graduates**, because that gives the product a clear audience, a strong employability angle, and a realistic demo flow for the hackathon.
+
+---
+
+# 22. Short Product Stack Recommendation
+
+## Best stack for your hackathon MVP
+
+* **Frontend:** Next.js + Tailwind CSS
+* **Roadmap Visuals:** React Flow
+* **AI:** Gemini API
+* **Database:** Supabase / PostgreSQL
+* **Auth:** Supabase Auth or NextAuth
+* **Hosting:** Vercel
+
+---
+
+If you want, I can do the **next stage** and turn this into a **clean hackathon-ready README / project documentation file** with sections like:
+
+* `Problem`
+* `Solution`
+* `Features`
+* `Tech Stack`
+* `How It Works`
+* `Architecture`
+* `MVP`
+* `Future Scope`
+
+in a **more polished GitHub-style markdown format**.
+
+If that’s what you want, just say:
+
+## **“Convert it into a professional README markdown”**
+
+and I’ll format it properly for you.
