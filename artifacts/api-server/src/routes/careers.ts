@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { tokenToUserId } from "./auth";
-import { userProfiles } from "./profile";
+import { supabase, getAuthUserId } from "../lib/supabase";
 
 const router = Router();
 
@@ -195,20 +194,18 @@ export const CAREERS: CareerDetail[] = [
   },
 ];
 
-function getAuthUserId(req: any): string | null {
-  const auth = req.headers.authorization;
-  if (!auth?.startsWith("Bearer ")) return null;
-  return tokenToUserId.get(auth.slice(7)) ?? null;
-}
-
-function computeRecommendations(userId: string) {
-  const profile = userProfiles.get(userId);
+async function computeRecommendations(userId: string) {
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
   return CAREERS.map((career) => {
     let score = 50;
     if (profile) {
       const interests = profile.interests ?? [];
-      const skills = (profile.existingSkills ?? []).map((s: string) => s.toLowerCase());
-      const budget = profile.monthlyBudget ?? "";
+      const skills = (profile.existing_skills ?? []).map((s: string) => s.toLowerCase());
+      const budget = profile.monthly_budget ?? "";
       const timeline = profile.timeline ?? "";
 
       if (interests.some((i: string) => career.category.toLowerCase().includes(i.toLowerCase()) || career.title.toLowerCase().includes(i.toLowerCase()))) score += 20;
@@ -229,7 +226,7 @@ function computeRecommendations(userId: string) {
         requiredSkills: career.requiredSkills, category: career.category,
       },
       fitScore: score,
-      whyItFits: `Based on your background in ${profile?.course ?? "your field"} and interests in ${(profile?.interests ?? ["this area"]).join(", ")}, this path offers strong alignment with your goals and the Nigerian job market.`,
+      whyItFits: `Based on your background in ${profile?.course ?? "your field"} and interests in ${((profile?.interests as string[]) ?? ["this area"]).join(", ")}, this path offers strong alignment with your goals and the Nigerian job market.`,
       recommendedNextAction: `Start with ${career.requiredSkills[0]} and complete your first project in ${career.timeToJobReady.split("-")[0]} months.`,
     };
   }).sort((a, b) => b.fitScore - a.fitScore).slice(0, 5);
@@ -239,8 +236,8 @@ router.get("/careers", (_req, res) => {
   res.json(CAREERS.map(({ tools, responsibilities, entryStrategy, ...c }) => c));
 });
 
-router.get("/careers/recommendations", (req, res) => {
-  const userId = getAuthUserId(req);
+router.get("/careers/recommendations", async (req, res) => {
+  const userId = await getAuthUserId(req);
   if (!userId) {
     const recs = CAREERS.slice(0, 5).map((career) => ({
       career: { id: career.id, title: career.title, description: career.description, salaryMin: career.salaryMin, salaryMax: career.salaryMax, demandLevel: career.demandLevel, remotePotential: career.remotePotential, difficultyLevel: career.difficultyLevel, timeToJobReady: career.timeToJobReady, requiredSkills: career.requiredSkills, category: career.category },
@@ -251,15 +248,22 @@ router.get("/careers/recommendations", (req, res) => {
     res.json(recs);
     return;
   }
-  res.json(computeRecommendations(userId));
+  res.json(await computeRecommendations(userId));
 });
 
-router.get("/careers/:id/skill-gap", (req, res) => {
+router.get("/careers/:id/skill-gap", async (req, res) => {
   const career = CAREERS.find((c) => c.id === req.params.id);
   if (!career) { res.status(404).json({ error: "Career not found" }); return; }
-  const userId = getAuthUserId(req);
-  const profile = userId ? userProfiles.get(userId) : null;
-  const userSkills = (profile?.existingSkills ?? []).map((s: string) => s.toLowerCase());
+  const userId = await getAuthUserId(req);
+  let userSkills: string[] = [];
+  if (userId) {
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("existing_skills")
+      .eq("user_id", userId)
+      .single();
+    userSkills = ((profile?.existing_skills as string[]) ?? []).map((s) => s.toLowerCase());
+  }
   const skillsHave = career.requiredSkills.filter((s) => userSkills.some((us) => s.toLowerCase().includes(us)));
   const skillsMissing = career.requiredSkills.filter((s) => !skillsHave.includes(s));
   const readinessScore = Math.round((skillsHave.length / career.requiredSkills.length) * 100);

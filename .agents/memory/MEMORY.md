@@ -1,0 +1,1 @@
+- [Supabase + Gemini setup](supabase-gemini-setup.md) — project uses Supabase JS client (service role key) for all DB ops; Gemini via @google/generative-ai; PORT must be set explicitly in workflow commands.

@@ -1,47 +1,16 @@
 import { Router } from "express";
 import { GenerateRoadmapBody, CompleteTaskBody } from "@workspace/api-zod";
-import { tokenToUserId } from "./auth";
+import { supabase, getAuthUserId } from "../lib/supabase";
 import { CAREERS } from "./careers";
 
 const router = Router();
-
-interface RoadmapTask {
-  id: string;
-  roadmapId: string;
-  title: string;
-  description: string;
-  stage: string;
-  monthNumber: number | null;
-  resourceLink: string | null;
-  estimatedDuration: string;
-  difficulty: string;
-  status: string;
-  completedAt: string | null;
-}
-
-interface Roadmap {
-  id: string;
-  userId: string;
-  careerId: string;
-  careerTitle: string;
-  generatedAt: string;
-  tasks: RoadmapTask[];
-}
-
-const userRoadmaps = new Map<string, Roadmap>();
-
-function getAuthUserId(req: any): string | null {
-  const auth = req.headers.authorization;
-  if (!auth?.startsWith("Bearer ")) return null;
-  return tokenToUserId.get(auth.slice(7)) ?? null;
-}
 
 function generateId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-function buildRoadmapTasks(career: any, roadmapId: string): RoadmapTask[] {
-  const templates: Record<string, { stage: string; month: number; title: string; description: string; duration: string; difficulty: string; resource: string }[]> = {
+function buildRoadmapTasks(career: any, roadmapId: string) {
+  const templates: Record<string, any[]> = {
     "data-analyst": [
       { stage: "Foundation", month: 1, title: "Excel & Google Sheets Mastery", description: "Learn formulas, pivot tables, VLOOKUP, and data formatting.", duration: "2 weeks", difficulty: "Beginner", resource: "https://www.youtube.com/watch?v=Vl0H-qTclOg" },
       { stage: "Foundation", month: 1, title: "Data Concepts & Statistics Basics", description: "Understand mean, median, mode, distributions, and basic statistical thinking.", duration: "1 week", difficulty: "Beginner", resource: "https://www.khanacademy.org/math/statistics-probability" },
@@ -87,60 +56,146 @@ function buildRoadmapTasks(career: any, roadmapId: string): RoadmapTask[] {
   const taskDefs = templates[career.id] ?? defaultTasks;
   return taskDefs.map((t, i) => ({
     id: `${roadmapId}_task_${i}`,
-    roadmapId,
+    roadmap_id: roadmapId,
     title: t.title,
     description: t.description,
     stage: t.stage,
-    monthNumber: t.month,
-    resourceLink: t.resource,
-    estimatedDuration: t.duration,
+    month_number: t.month,
+    resource_link: t.resource,
+    estimated_duration: t.duration,
     difficulty: t.difficulty,
     status: "pending",
-    completedAt: null,
+    completed_at: null,
   }));
 }
 
-router.get("/roadmap", (req, res) => {
-  const userId = getAuthUserId(req);
+function toPublicRoadmap(roadmap: any, tasks: any[]) {
+  return {
+    id: roadmap.id,
+    userId: roadmap.user_id,
+    careerId: roadmap.career_id,
+    careerTitle: roadmap.career_title,
+    generatedAt: roadmap.generated_at,
+    tasks: tasks.map((t) => ({
+      id: t.id,
+      roadmapId: t.roadmap_id,
+      title: t.title,
+      description: t.description,
+      stage: t.stage,
+      monthNumber: t.month_number,
+      resourceLink: t.resource_link,
+      estimatedDuration: t.estimated_duration,
+      difficulty: t.difficulty,
+      status: t.status,
+      completedAt: t.completed_at,
+    })),
+  };
+}
+
+router.get("/roadmap", async (req, res) => {
+  const userId = await getAuthUserId(req);
   if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
-  const roadmap = userRoadmaps.get(userId);
+
+  const { data: roadmap } = await supabase
+    .from("roadmaps")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+
   if (!roadmap) { res.status(404).json({ error: "No roadmap found" }); return; }
-  res.json(roadmap);
+
+  const { data: tasks } = await supabase
+    .from("roadmap_tasks")
+    .select("*")
+    .eq("roadmap_id", roadmap.id)
+    .order("month_number", { ascending: true });
+
+  res.json(toPublicRoadmap(roadmap, tasks ?? []));
 });
 
-router.post("/roadmap", (req, res) => {
-  const userId = getAuthUserId(req);
+router.post("/roadmap", async (req, res) => {
+  const userId = await getAuthUserId(req);
   if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+
   const parsed = GenerateRoadmapBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid input" }); return; }
+
   const career = CAREERS.find((c) => c.id === parsed.data.careerId);
   if (!career) { res.status(404).json({ error: "Career not found" }); return; }
+
   const roadmapId = generateId();
-  const roadmap: Roadmap = {
+  const roadmap = {
     id: roadmapId,
-    userId,
-    careerId: career.id,
-    careerTitle: career.title,
-    generatedAt: new Date().toISOString(),
-    tasks: buildRoadmapTasks(career, roadmapId),
+    user_id: userId,
+    career_id: career.id,
+    career_title: career.title,
   };
-  userRoadmaps.set(userId, roadmap);
-  res.status(201).json(roadmap);
+
+  await supabase.from("roadmaps").upsert(roadmap, { onConflict: "user_id" });
+
+  const { data: existingRoadmap } = await supabase
+    .from("roadmaps")
+    .select("id")
+    .eq("user_id", userId)
+    .single();
+
+  const finalRoadmapId = existingRoadmap?.id ?? roadmapId;
+
+  await supabase.from("roadmap_tasks").delete().eq("roadmap_id", finalRoadmapId);
+
+  const tasks = buildRoadmapTasks(career, finalRoadmapId);
+  await supabase.from("roadmap_tasks").insert(tasks);
+
+  const { data: savedRoadmap } = await supabase
+    .from("roadmaps")
+    .select("*")
+    .eq("id", finalRoadmapId)
+    .single();
+
+  res.status(201).json(toPublicRoadmap(savedRoadmap ?? roadmap, tasks));
 });
 
-router.patch("/roadmap/tasks/:taskId/complete", (req, res) => {
-  const userId = getAuthUserId(req);
+router.patch("/roadmap/tasks/:taskId/complete", async (req, res) => {
+  const userId = await getAuthUserId(req);
   if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+
   const parsed = CompleteTaskBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid input" }); return; }
-  const roadmap = userRoadmaps.get(userId);
-  if (!roadmap) { res.status(404).json({ error: "No roadmap found" }); return; }
-  const task = roadmap.tasks.find((t) => t.id === req.params.taskId);
+
+  const { data: task } = await supabase
+    .from("roadmap_tasks")
+    .select("*, roadmaps!inner(user_id)")
+    .eq("id", req.params.taskId)
+    .single();
+
   if (!task) { res.status(404).json({ error: "Task not found" }); return; }
-  task.status = parsed.data.completed ? "completed" : "pending";
-  task.completedAt = parsed.data.completed ? new Date().toISOString() : null;
-  res.json(task);
+  if ((task as any).roadmaps?.user_id !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
+
+  const updates = {
+    status: parsed.data.completed ? "completed" : "pending",
+    completed_at: parsed.data.completed ? new Date().toISOString() : null,
+  };
+
+  const { data: updated } = await supabase
+    .from("roadmap_tasks")
+    .update(updates)
+    .eq("id", req.params.taskId)
+    .select()
+    .single();
+
+  res.json({
+    id: updated?.id,
+    roadmapId: updated?.roadmap_id,
+    title: updated?.title,
+    description: updated?.description,
+    stage: updated?.stage,
+    monthNumber: updated?.month_number,
+    resourceLink: updated?.resource_link,
+    estimatedDuration: updated?.estimated_duration,
+    difficulty: updated?.difficulty,
+    status: updated?.status,
+    completedAt: updated?.completed_at,
+  });
 });
 
-export { userRoadmaps };
 export default router;
