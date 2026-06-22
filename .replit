@@ -33,7 +33,8 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo 'Use artifact workflows instead'"
+args = "PORT=5000 pnpm --filter @workspace/api-server run dev"
+waitForPort = 5000
 
 [[workflows.workflow]]
 name = "Start application"

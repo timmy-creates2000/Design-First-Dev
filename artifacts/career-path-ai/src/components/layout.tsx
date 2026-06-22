@@ -1,6 +1,5 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLogout } from "@workspace/api-client-react";
 import { 
   LayoutDashboard, 
   Compass, 
@@ -26,15 +25,10 @@ const navItems = [
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { logout } = useAuth();
-  const logoutMutation = useLogout();
 
-  const handleLogout = () => {
-    logoutMutation.mutate(undefined, {
-      onSettled: () => {
-        logout();
-        setLocation("/login");
-      }
-    });
+  const handleLogout = async () => {
+    await logout();
+    setLocation("/login");
   };
 
   return (
@@ -90,7 +84,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             variant="ghost" 
             className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 px-3 py-2.5"
             onClick={handleLogout}
-            disabled={logoutMutation.isPending}
           >
             <LogOut className="w-5 h-5 mr-3" />
             Sign Out

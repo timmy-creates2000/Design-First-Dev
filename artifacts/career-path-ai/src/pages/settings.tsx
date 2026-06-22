@@ -4,21 +4,15 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Bell, Lock, Globe, Moon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLogout } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
 
 export default function Settings() {
   const { logout } = useAuth();
-  const logoutMutation = useLogout();
   const [, setLocation] = useLocation();
 
-  const handleLogout = () => {
-    logoutMutation.mutate(undefined, {
-      onSettled: () => {
-        logout();
-        setLocation("/login");
-      }
-    });
+  const handleLogout = async () => {
+    await logout();
+    setLocation("/login");
   };
 
   return (
@@ -59,37 +53,41 @@ export default function Settings() {
             <CardTitle className="flex items-center gap-2 text-lg">
               <Moon className="w-5 h-5 text-primary" /> Appearance
             </CardTitle>
-            <CardDescription>Customize the interface.</CardDescription>
+            <CardDescription>Customize how the app looks.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label>Dark Mode</Label>
-                <p className="text-sm text-muted-foreground">Toggle dark theme across the app</p>
+                <p className="text-sm text-muted-foreground">Coming soon</p>
               </div>
-              <Switch />
+              <Switch disabled />
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg text-destructive">
-              <Lock className="w-5 h-5" /> Account Security
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Lock className="w-5 h-5 text-primary" /> Account
             </CardTitle>
-            <CardDescription>Manage your account access.</CardDescription>
+            <CardDescription>Manage your account security.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full sm:w-auto">Change Password</Button>
-            <div className="pt-4 mt-4 border-t">
-              <Button 
-                variant="destructive" 
-                onClick={handleLogout}
-                disabled={logoutMutation.isPending}
-              >
-                Sign Out
-              </Button>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Two-Factor Authentication</Label>
+                <p className="text-sm text-muted-foreground">Coming soon</p>
+              </div>
+              <Switch disabled />
             </div>
+            <Button
+              variant="destructive"
+              className="w-full sm:w-auto"
+              onClick={handleLogout}
+            >
+              Sign Out
+            </Button>
           </CardContent>
         </Card>
       </div>

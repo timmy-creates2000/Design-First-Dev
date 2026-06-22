@@ -1,57 +1,82 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User } from "@workspace/api-client-react";
+import { supabase } from "@/lib/supabase";
+import { setAuthTokenGetter } from "@workspace/api-client-react";
+import type { Session } from "@supabase/supabase-js";
+
+export interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+  onboardingComplete: boolean;
+  createdAt: string;
+}
 
 interface AuthContextType {
-  user: User | null;
-  token: string | null;
+  user: AppUser | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-  updateUser: (user: User) => void;
+  isLoading: boolean;
+  logout: () => Promise<void>;
+  updateUser: (user: AppUser) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function sessionToAppUser(session: Session): AppUser {
+  const { user } = session;
+  return {
+    id: user.id,
+    name: user.user_metadata?.name ?? user.email?.split("@")[0] ?? "User",
+    email: user.email ?? "",
+    onboardingComplete: user.user_metadata?.onboardingComplete ?? false,
+    createdAt: user.created_at,
+  };
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("auth_token");
-    const storedUser = localStorage.getItem("auth_user");
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        // failed to parse
-      }
-    }
+    setAuthTokenGetter(async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session?.access_token ?? null;
+    });
+
+    supabase.auth.getSession().then(({ data }) => {
+      const s = data.session;
+      setSession(s);
+      setUser(s ? sessionToAppUser(s) : null);
+      setIsLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+      setUser(s ? sessionToAppUser(s) : null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
-    setUser(newUser);
-    localStorage.setItem("auth_token", newToken);
-    localStorage.setItem("auth_user", JSON.stringify(newUser));
-  };
-
-  const logout = () => {
-    setToken(null);
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
     setUser(null);
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_user");
   };
 
-  const updateUser = (newUser: User) => {
-    setUser(newUser);
-    if (token) {
-      localStorage.setItem("auth_user", JSON.stringify(newUser));
-    }
-  }
+  const updateUser = (updated: AppUser) => {
+    setUser(updated);
+    supabase.auth.updateUser({
+      data: {
+        name: updated.name,
+        onboardingComplete: updated.onboardingComplete,
+      },
+    });
+  };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, session, isAuthenticated: !!session, isLoading, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

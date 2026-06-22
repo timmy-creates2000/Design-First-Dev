@@ -13,10 +13,7 @@ export async function getAuthUserId(req: any): Promise<string | null> {
   const auth = req.headers.authorization;
   if (!auth?.startsWith("Bearer ")) return null;
   const token = auth.slice(7);
-  const { data } = await supabase
-    .from("sessions")
-    .select("user_id")
-    .eq("token", token)
-    .single();
-  return data?.user_id ?? null;
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) return null;
+  return data.user.id;
 }

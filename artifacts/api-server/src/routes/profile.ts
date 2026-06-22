@@ -31,7 +31,6 @@ router.post("/profile", async (req, res) => {
   }
 
   const profileData = {
-    id: userId + "_profile",
     user_id: userId,
     education_level: parsed.data.educationLevel,
     course: parsed.data.course,
@@ -58,11 +57,6 @@ router.post("/profile", async (req, res) => {
     res.status(500).json({ error: "Failed to save profile" });
     return;
   }
-
-  await supabase
-    .from("users")
-    .update({ onboarding_complete: true })
-    .eq("id", userId);
 
   logger.info({ userId }, "Profile saved");
   res.json(toPublicProfile(profileData));

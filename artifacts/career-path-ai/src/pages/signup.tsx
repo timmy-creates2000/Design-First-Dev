@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSignup } from "@workspace/api-client-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -18,30 +18,40 @@ const signupSchema = z.object({
 });
 
 export default function Signup() {
-  const [location, setLocation] = useLocation();
-  const { login: authenticate } = useAuth();
-  const signupMutation = useSignup();
+  const [, setLocation] = useLocation();
+  const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof signupSchema>) => {
-    signupMutation.mutate({ data }, {
-      onSuccess: (res) => {
-        authenticate(res.token, res.user);
-        toast.success("Account created successfully!");
-        setLocation("/onboarding");
+  const onSubmit = async (data: z.infer<typeof signupSchema>) => {
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          name: data.name,
+          onboardingComplete: false,
+        },
       },
-      onError: (err: any) => {
-        toast.error(err.message || "Failed to create account");
-      }
     });
+
+    if (error) {
+      toast.error(error.message || "Failed to create account");
+      setLoading(false);
+      return;
+    }
+
+    toast.success("Account created! Let's set up your profile.");
+    setLocation("/onboarding");
+    setLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-card rounded-3xl p-8 border shadow-sm"
@@ -57,10 +67,10 @@ export default function Signup() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input 
-              id="name" 
-              placeholder="Chidi Okeke" 
-              {...register("name")} 
+            <Input
+              id="name"
+              placeholder="Chidi Okeke"
+              {...register("name")}
               className={errors.name ? "border-destructive" : ""}
             />
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
@@ -68,11 +78,11 @@ export default function Signup() {
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input 
-              id="email" 
-              type="email" 
-              placeholder="chidi@example.com" 
-              {...register("email")} 
+            <Input
+              id="email"
+              type="email"
+              placeholder="chidi@example.com"
+              {...register("email")}
               className={errors.email ? "border-destructive" : ""}
             />
             {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
@@ -80,22 +90,23 @@ export default function Signup() {
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input 
-              id="password" 
-              type="password" 
-              {...register("password")} 
+            <Input
+              id="password"
+              type="password"
+              {...register("password")}
               className={errors.password ? "border-destructive" : ""}
             />
             {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
           </div>
 
-          <Button type="submit" className="w-full h-12 text-base mt-6" disabled={signupMutation.isPending}>
-            {signupMutation.isPending ? "Creating account..." : "Create Account"}
+          <Button type="submit" className="w-full h-12 text-base mt-6" disabled={loading}>
+            {loading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Already have an account? <Link href="/login" className="text-secondary font-medium hover:underline">Log in</Link>
+          Already have an account?{" "}
+          <Link href="/login" className="text-secondary font-medium hover:underline">Log in</Link>
         </p>
       </motion.div>
     </div>

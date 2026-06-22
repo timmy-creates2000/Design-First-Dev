@@ -25,8 +25,10 @@ import Settings from "@/pages/settings";
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ component: Component, path }: { component: React.ComponentType<any>, path: string }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [location, setLocation] = useLocation();
+
+  if (isLoading) return null;
 
   if (!isAuthenticated) {
     setLocation("/login");
